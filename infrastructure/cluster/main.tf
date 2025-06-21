@@ -6,22 +6,21 @@
 # Install KServe
 # ----------------------
 resource "helm_release" "kserve" {
-  name       = "kserve"
-  repository = "https://kserve.github.io/helm-charts"
-  chart      = "kserve"
-  namespace  = "kserve"
+  name             = "kserve"
+  repository       = "https://kserve.github.io/helm-charts"
+  chart            = "kserve"
+  namespace        = "kserve"
   create_namespace = true
-  version    = "0.15.0"
+  version          = "0.15.0"
 
-  set {
+  set = [{
     name  = "ingress.gateway"
     value = "istio"
-  }
-
-  set {
-    name  = "knative.enabled"
-    value = "false" # ensure KServe doesn't expect Knative
-  }
+    },
+    {
+      name  = "knative.enabled"
+      value = "false" # ensure KServe doesn't expect Knative
+  }]
 
   depends_on = [helm_release.istio_ingressgateway]
 }

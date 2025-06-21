@@ -2,10 +2,10 @@
 # Install Istio Base + Istiod + Ingress Gateway
 # ----------------------
 resource "helm_release" "istio_base" {
-  name       = "istio-base"
-  repository = "https://istio-release.storage.googleapis.com/charts"
-  chart      = "base"
-  namespace  = "istio-system"
+  name             = "istio-base"
+  repository       = "https://istio-release.storage.googleapis.com/charts"
+  chart            = "base"
+  namespace        = "istio-system"
   create_namespace = true
 }
 
@@ -24,8 +24,8 @@ resource "helm_release" "istio_ingressgateway" {
   namespace  = "istio-system"
   depends_on = [helm_release.istiod]
 
-  set {
+  set = [{
     name  = "service.type"
     value = "NodePort"
-  }
+  }]
 }

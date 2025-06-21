@@ -1,4 +1,4 @@
 variable "kubeconfig_path" {
-  type = string
+  type        = string
   description = "Path to kubeconfig file"
 }
