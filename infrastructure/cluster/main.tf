@@ -5,6 +5,16 @@ resource "kubernetes_namespace" "kserve" {
   }
 }
 
+resource "helm_release" "kserve_crd_minimal" {
+  name       = "kserve-crd-minimal"
+  namespace  = "kserve"  # create the namespace if needed
+  version    = "v0.15.2"
+
+  repository = "oci://ghcr.io/kserve/charts"
+  chart      = "kserve-crd-minimal"
+  create_namespace = false
+}
+
 
 
 # ----------------------
@@ -35,7 +45,7 @@ resource "helm_release" "kserve" {
     value = "false"
   }]
 
-  depends_on = [helm_release.istio_ingress_gateway, kubernetes_namespace.kserve]
+  depends_on = [helm_release.istio_ingress_gateway, helm_release.kserve_crd_minimal]
 }
 
 # ----------------------
