@@ -62,39 +62,3 @@ resource "helm_release" "kserve" {
   depends_on = [helm_release.istio_ingress_gateway, kubernetes_manifest.kserve_webhook_certificate] 
 }
 
-# ----------------------
-# Set default mode to RawDeployment
-# ----------------------
-# resource "kubernetes_config_map" "kserve_rawdeployment_config" {
-#   metadata {
-#     name      = "inferenceservice-config"
-#     namespace = kubernetes_namespace.kserve.metadata[0].name
-#   }
-
-#   data = {
-#     deploy = yamlencode({
-#       defaultDeploymentMode = "RawDeployment"
-#     })
-#   }
-
-#   depends_on = [helm_release.kserve]
-# }
-
-
-# resource "kubernetes_manifest" "sklearn_iris" {
-#   manifest = {
-#     apiVersion = "serving.kserve.io/v1beta1"
-#     kind       = "InferenceService"
-#     metadata = {
-#       name      = "sklearn-iris"
-#       namespace = "default"
-#     }
-#     spec = {
-#       predictor = {
-#         sklearn = {
-#           storageUri = "gs://kfserving-examples/models/sklearn/1.0/model"
-#         }
-#       }
-#     }
-#   }
-# }
