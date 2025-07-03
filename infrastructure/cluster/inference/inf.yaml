@@ -1,0 +1,13 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: tensorflow-flowers
+  namespace: kserve
+spec:
+  predictor:
+    tensorflow:
+      storageUri: gs://kfserving-samples/models/tensorflow/flowers
+      resources:
+        limits:
+          memory: 2Gi
+
