@@ -64,3 +64,24 @@ resource "kubernetes_manifest" "sklearn_iris_inference" {
     }
   }
 }
+
+resource "kubernetes_service" "sklearn_iris_nodeport" {
+  metadata {
+    name      = "sklearn-iris-nodeport"
+    namespace = data.kubernetes_namespace.kserve.metadata[0].name
+  }
+
+  spec {
+    selector = {
+      "serving.kserve.io/inferenceservice" = "sklearn-iris"
+    }
+
+    type = "NodePort" 
+
+    port {
+      port        = 80        # Exposed service port
+      target_port = 8080      # Port on the pod (KServe predictor listens on 8080)
+      node_port   = 30080     # Optional fixed NodePort (or omit to let k8s assign)
+    }
+  }
+}
