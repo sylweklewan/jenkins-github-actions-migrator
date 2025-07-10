@@ -5,6 +5,195 @@ data "kubernetes_namespace" "kserve" {
   }
 }
 
+
+
+resource "kubernetes_persistent_volume" "deepseek_coder_pv" {
+  metadata {
+    name = "deepseek-coder-pv"
+
+    labels = {
+      type = "local"
+    }
+  }
+
+  spec {
+    capacity = {
+      storage = "30Gi"
+    }
+
+    persistent_volume_source {
+      local {
+            path = "/home/user/models/deepseek-coder"
+      }
+    }
+
+    access_modes                     = ["ReadWriteOnce"]
+    persistent_volume_reclaim_policy = "Retain"
+    storage_class_name               = "local-storage"
+    volume_mode = "Filesystem"
+
+
+
+    node_affinity {
+      required {
+        node_selector_term {
+          match_expressions {
+            key      = "kubernetes.io/hostname"
+            operator = "In"
+            values   = ["4d37decc-54d9-4baa-871a-72b0bf11658d"]  # replace this with your actual node name
+          }
+        }
+      }
+    }
+  }
+}
+
+
+resource "kubernetes_persistent_volume_claim" "deepseek_coder_pvc" {
+  metadata {
+    name      = "deepseek-coder-pvc"
+    namespace = data.kubernetes_namespace.kserve.metadata[0].name
+  }
+
+  spec {
+    access_modes = ["ReadWriteOnce"]
+
+    resources {
+      requests = {
+        storage = "30Gi"
+      }
+    }
+
+    storage_class_name = "local-storage"
+    volume_name        = kubernetes_persistent_volume.deepseek_coder_pv.metadata[0].name
+  }
+}
+
+
+resource "kubernetes_manifest" "deepseek_coder_inference" {
+  manifest = {
+    apiVersion = "serving.kserve.io/v1beta1"
+    kind       = "InferenceService"
+    metadata = {
+      name      = "deepseek-coder"
+      namespace = data.kubernetes_namespace.kserve.metadata[0].name
+    }
+    spec = {
+      predictor = {
+        containers = [
+          {
+            name  = "kserve-container"
+            image = "ghcr.io/huggingface/text-generation-inference:latest" 
+            args = [
+              "--model-id=/mnt/models",
+              "--revision=local",
+              "--trust-remote-code"
+            ]
+
+            resources = {
+              requests = {
+                memory = "10Gi"
+                cpu = "800m"
+                "nvidia.com/gpu" = "1"
+              }
+
+              limits = {
+                memory = "10Gi"
+                cpu = "900m"
+                "nvidia.com/gpu" = "1"
+              }
+            }
+
+            volumeMounts = [
+              {
+                name      = "model-volume"
+                mountPath = "/mnt/models"
+              }
+            ]
+          }
+        ]
+        runtimeClassName = "nvidia"
+        volumes = [
+          {
+            name = "model-volume"
+            persistentVolumeClaim = {
+              claimName = kubernetes_persistent_volume_claim.deepseek_coder_pvc.metadata[0].name
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
+
+resource "kubernetes_service" "deepseek_coder_nodeport" {
+  metadata {
+    name      = "deepseek-coder-nodeport"
+    namespace = data.kubernetes_namespace.kserve.metadata[0].name
+  }
+
+  spec {
+    selector = {
+      "serving.kserve.io/inferenceservice" = "deepseek-coder"
+    }
+
+    type = "NodePort" 
+
+    port {
+      port        = 80        # Exposed service port
+      target_port = 8080      # Port on the pod (KServe predictor listens on 8080)
+      node_port   = 30080     # Optional fixed NodePort (or omit to let k8s assign)
+    }
+  }
+}
+
+
+
+# Sample inference
+# resource "kubernetes_manifest" "sklearn_iris_inference" {
+#   manifest = {
+#     apiVersion = "serving.kserve.io/v1beta1"
+#     kind       = "InferenceService"
+#     metadata = {
+#       name      = "sklearn-iris"
+#       namespace = data.kubernetes_namespace.kserve.metadata[0].name
+#     }
+#     spec = {
+#       predictor = {
+#         model = {
+#           modelFormat = {
+#             name = "sklearn"
+#           }
+#           storageUri = "gs://kfserving-examples/models/sklearn/1.0/model"
+#         }
+#       }
+#     }
+#   }
+# }
+
+# resource "kubernetes_service" "sklearn_iris_nodeport" {
+#   metadata {
+#     name      = "sklearn-iris-nodeport"
+#     namespace = data.kubernetes_namespace.kserve.metadata[0].name
+#   }
+
+#   spec {
+#     selector = {
+#       "serving.kserve.io/inferenceservice" = "sklearn-iris"
+#     }
+
+#     type = "NodePort" 
+
+#     port {
+#       port        = 80        # Exposed service port
+#       target_port = 8080      # Port on the pod (KServe predictor listens on 8080)
+#       node_port   = 30080     # Optional fixed NodePort (or omit to let k8s assign)
+#     }
+#   }
+# }
+
+# OLD TO REMOVE
 # ----------------------
 # Set default mode to RawDeployment
 # ----------------------
@@ -44,44 +233,3 @@ data "kubernetes_namespace" "kserve" {
 #     }
 #   }
 # }
-resource "kubernetes_manifest" "sklearn_iris_inference" {
-  manifest = {
-    apiVersion = "serving.kserve.io/v1beta1"
-    kind       = "InferenceService"
-    metadata = {
-      name      = "sklearn-iris"
-      namespace = data.kubernetes_namespace.kserve.metadata[0].name
-    }
-    spec = {
-      predictor = {
-        model = {
-          modelFormat = {
-            name = "sklearn"
-          }
-          storageUri = "gs://kfserving-examples/models/sklearn/1.0/model"
-        }
-      }
-    }
-  }
-}
-
-resource "kubernetes_service" "sklearn_iris_nodeport" {
-  metadata {
-    name      = "sklearn-iris-nodeport"
-    namespace = data.kubernetes_namespace.kserve.metadata[0].name
-  }
-
-  spec {
-    selector = {
-      "serving.kserve.io/inferenceservice" = "sklearn-iris"
-    }
-
-    type = "NodePort" 
-
-    port {
-      port        = 80        # Exposed service port
-      target_port = 8080      # Port on the pod (KServe predictor listens on 8080)
-      node_port   = 30080     # Optional fixed NodePort (or omit to let k8s assign)
-    }
-  }
-}
