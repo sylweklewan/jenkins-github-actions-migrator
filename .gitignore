@@ -44,3 +44,4 @@ terraform.rc
 *.hcl
 *.pub
 *.tfvars.bak
+curl*sh

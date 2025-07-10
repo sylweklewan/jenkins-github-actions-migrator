@@ -87,7 +87,14 @@ resource "kubernetes_manifest" "deepseek_coder_inference" {
             args = [
               "--model-id=/mnt/models",
               "--revision=local",
-              "--trust-remote-code"
+              "--trust-remote-code",
+              "--port=8080",
+            ]
+
+            ports = [
+              {
+                containerPort = 8080
+              }
             ]
 
             resources = {
