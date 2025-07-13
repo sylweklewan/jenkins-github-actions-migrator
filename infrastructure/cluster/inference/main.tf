@@ -23,7 +23,7 @@ resource "kubernetes_persistent_volume" "deepseek_coder_pv" {
 
     persistent_volume_source {
       local {
-            path = "/home/user/models/deepseek-coder"
+            path = "/home/user/models"
       }
     }
 
@@ -69,70 +69,44 @@ resource "kubernetes_persistent_volume_claim" "deepseek_coder_pvc" {
   }
 }
 
-
-resource "kubernetes_manifest" "deepseek_coder_inference" {
+resource "kubernetes_manifest" "deepseek_inference" {
   manifest = {
     apiVersion = "serving.kserve.io/v1beta1"
     kind       = "InferenceService"
     metadata = {
-      name      = "deepseek-coder"
-      namespace = data.kubernetes_namespace.kserve.metadata[0].name
+       name      = "deepseek"
+       namespace = data.kubernetes_namespace.kserve.metadata[0].name
     }
     spec = {
       predictor = {
-        containers = [
-          {
-            name  = "kserve-container"
-            image = "ghcr.io/huggingface/text-generation-inference:latest" 
-            args = [
-              "--model-id=/mnt/models",
-              "--revision=local",
-              "--trust-remote-code",
-              "--port=8080",
-            ]
-
-            ports = [
-              {
-                containerPort = 8080
-              }
-            ]
-
-            resources = {
-              requests = {
-                memory = "10Gi"
-                cpu = "800m"
-                "nvidia.com/gpu" = "1"
-              }
-
-              limits = {
-                memory = "10Gi"
-                cpu = "900m"
-                "nvidia.com/gpu" = "1"
-              }
-            }
-
-            volumeMounts = [
-              {
-                name      = "model-volume"
-                mountPath = "/mnt/models"
-              }
-            ]
-          }
-        ]
         runtimeClassName = "nvidia"
-        volumes = [
-          {
-            name = "model-volume"
-            persistentVolumeClaim = {
-              claimName = kubernetes_persistent_volume_claim.deepseek_coder_pvc.metadata[0].name
+        model = {
+          storageUri = "pvc://deepseek-coder-pvc/deepseek/"
+          modelFormat = {
+            name = "huggingface"
+          }
+          args = [
+            "--model_name=deepseek",
+            "--model_dir=/mnt/models",
+            "--trust-remote-code",
+          ]
+          resources = {
+            requests = {
+              memory = "10Gi"
+              cpu = "800m"
+              "nvidia.com/gpu" = "1"
+            }
+            limits = {
+              memory = "10Gi"
+              cpu = "900m"
+              "nvidia.com/gpu" = "1"
             }
           }
-        ]
+        }
       }
     }
   }
 }
-
 
 resource "kubernetes_service" "deepseek_coder_nodeport" {
   metadata {
@@ -142,7 +116,7 @@ resource "kubernetes_service" "deepseek_coder_nodeport" {
 
   spec {
     selector = {
-      "serving.kserve.io/inferenceservice" = "deepseek-coder"
+      "serving.kserve.io/inferenceservice" = "deepseek"
     }
 
     type = "NodePort" 
@@ -154,6 +128,94 @@ resource "kubernetes_service" "deepseek_coder_nodeport" {
     }
   }
 }
+
+
+
+
+# resource "kubernetes_manifest" "deepseek_coder_inference" {
+#   manifest = {
+#     apiVersion = "serving.kserve.io/v1beta1"
+#     kind       = "InferenceService"
+#     metadata = {
+#       name      = "deepseek-coder"
+#       namespace = data.kubernetes_namespace.kserve.metadata[0].name
+#     }
+#     spec = {
+#       predictor = {
+#         containers = [
+#           {
+#             name  = "kserve-container"
+#             image = "ghcr.io/huggingface/text-generation-inference:latest" 
+#             args = [
+#               "--model-id=/mnt/models",
+#               "--revision=local",
+#               "--trust-remote-code",
+#               "--port=8080",
+#             ]
+
+#             ports = [
+#               {
+#                 containerPort = 8080
+#               }
+#             ]
+
+#             resources = {
+#               requests = {
+#                 memory = "10Gi"
+#                 cpu = "800m"
+#                 "nvidia.com/gpu" = "1"
+#               }
+
+#               limits = {
+#                 memory = "10Gi"
+#                 cpu = "900m"
+#                 "nvidia.com/gpu" = "1"
+#               }
+#             }
+
+#             volumeMounts = [
+#               {
+#                 name      = "model-volume"
+#                 mountPath = "/mnt/models"
+#               }
+#             ]
+#           }
+#         ]
+#         runtimeClassName = "nvidia"
+#         volumes = [
+#           {
+#             name = "model-volume"
+#             persistentVolumeClaim = {
+#               claimName = kubernetes_persistent_volume_claim.deepseek_coder_pvc.metadata[0].name
+#             }
+#           }
+#         ]
+#       }
+#     }
+#   }
+# }
+
+
+# resource "kubernetes_service" "deepseek_coder_nodeport" {
+#   metadata {
+#     name      = "deepseek-coder-nodeport"
+#     namespace = data.kubernetes_namespace.kserve.metadata[0].name
+#   }
+
+#   spec {
+#     selector = {
+#       "serving.kserve.io/inferenceservice" = "deepseek-coder"
+#     }
+
+#     type = "NodePort" 
+
+#     port {
+#       port        = 80        # Exposed service port
+#       target_port = 8080      # Port on the pod (KServe predictor listens on 8080)
+#       node_port   = 30080     # Optional fixed NodePort (or omit to let k8s assign)
+#     }
+#   }
+# }
 
 
 
