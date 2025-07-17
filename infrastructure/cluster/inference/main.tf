@@ -7,9 +7,9 @@ data "kubernetes_namespace" "kserve" {
 
 
 
-resource "kubernetes_persistent_volume" "deepseek_coder_pv" {
+resource "kubernetes_persistent_volume" "nextcoder_coder_pv" {
   metadata {
-    name = "deepseek-coder-pv"
+    name = "nextcoder-coder-pv"
 
     labels = {
       type = "local"
@@ -49,9 +49,9 @@ resource "kubernetes_persistent_volume" "deepseek_coder_pv" {
 }
 
 
-resource "kubernetes_persistent_volume_claim" "deepseek_coder_pvc" {
+resource "kubernetes_persistent_volume_claim" "nextcoder_coder_pvc" {
   metadata {
-    name      = "deepseek-coder-pvc"
+    name      = "nextcoder-coder-pvc"
     namespace = data.kubernetes_namespace.kserve.metadata[0].name
   }
 
@@ -65,28 +65,28 @@ resource "kubernetes_persistent_volume_claim" "deepseek_coder_pvc" {
     }
 
     storage_class_name = "local-storage"
-    volume_name        = kubernetes_persistent_volume.deepseek_coder_pv.metadata[0].name
+    volume_name        = kubernetes_persistent_volume.nextcoder_coder_pv.metadata[0].name
   }
 }
 
-resource "kubernetes_manifest" "deepseek_inference" {
+resource "kubernetes_manifest" "nextcoder_inference" {
   manifest = {
     apiVersion = "serving.kserve.io/v1beta1"
     kind       = "InferenceService"
     metadata = {
-       name      = "deepseek"
+       name      = "nextcoder"
        namespace = data.kubernetes_namespace.kserve.metadata[0].name
     }
     spec = {
       predictor = {
         runtimeClassName = "nvidia"
         model = {
-          storageUri = "pvc://deepseek-coder-pvc/deepseek/"
+          storageUri = "pvc://nextcoder-coder-pvc/nextcoder/"
           modelFormat = {
             name = "huggingface"
           }
           args = [
-            "--model_name=deepseek",
+            "--model_name=nextcoder",
             "--model_dir=/mnt/models",
             "--trust-remote-code",
           ]
@@ -108,15 +108,15 @@ resource "kubernetes_manifest" "deepseek_inference" {
   }
 }
 
-resource "kubernetes_service" "deepseek_coder_nodeport" {
+resource "kubernetes_service" "nextcoder_coder_nodeport" {
   metadata {
-    name      = "deepseek-coder-nodeport"
+    name      = "nextcoder-coder-nodeport"
     namespace = data.kubernetes_namespace.kserve.metadata[0].name
   }
 
   spec {
     selector = {
-      "serving.kserve.io/inferenceservice" = "deepseek"
+      "serving.kserve.io/inferenceservice" = "nextcoder"
     }
 
     type = "NodePort" 
@@ -132,12 +132,12 @@ resource "kubernetes_service" "deepseek_coder_nodeport" {
 
 
 
-# resource "kubernetes_manifest" "deepseek_coder_inference" {
+# resource "kubernetes_manifest" "nextcoder_coder_inference" {
 #   manifest = {
 #     apiVersion = "serving.kserve.io/v1beta1"
 #     kind       = "InferenceService"
 #     metadata = {
-#       name      = "deepseek-coder"
+#       name      = "nextcoder-coder"
 #       namespace = data.kubernetes_namespace.kserve.metadata[0].name
 #     }
 #     spec = {
@@ -186,7 +186,7 @@ resource "kubernetes_service" "deepseek_coder_nodeport" {
 #           {
 #             name = "model-volume"
 #             persistentVolumeClaim = {
-#               claimName = kubernetes_persistent_volume_claim.deepseek_coder_pvc.metadata[0].name
+#               claimName = kubernetes_persistent_volume_claim.nextcoder_coder_pvc.metadata[0].name
 #             }
 #           }
 #         ]
@@ -196,15 +196,15 @@ resource "kubernetes_service" "deepseek_coder_nodeport" {
 # }
 
 
-# resource "kubernetes_service" "deepseek_coder_nodeport" {
+# resource "kubernetes_service" "nextcoder_coder_nodeport" {
 #   metadata {
-#     name      = "deepseek-coder-nodeport"
+#     name      = "nextcoder-coder-nodeport"
 #     namespace = data.kubernetes_namespace.kserve.metadata[0].name
 #   }
 
 #   spec {
 #     selector = {
-#       "serving.kserve.io/inferenceservice" = "deepseek-coder"
+#       "serving.kserve.io/inferenceservice" = "nextcoder-coder"
 #     }
 
 #     type = "NodePort" 

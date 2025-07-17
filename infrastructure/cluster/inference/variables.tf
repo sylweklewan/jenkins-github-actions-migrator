@@ -22,3 +22,8 @@ variable "prompt" {
   description = "The input payload or prompt for the model"
   type        = string
 }
+
+variable "max_tokens" {
+  type = number
+  description = "Max number of tokens in response"
+}

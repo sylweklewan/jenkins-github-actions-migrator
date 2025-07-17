@@ -7,16 +7,17 @@ resource "local_file" "curl_prompt_script_kserve" {
 
     HOST_IP="${var.host_ip}"
     PORT="${var.inference_port}"
-    MODEL="${var.model}"
-    PROMPT='${var.prompt}'
 
     read -r -d '' PAYLOAD <<EOF
     {
-      "instances": $PROMPT
+        "prompt": "${var.prompt}",
+        "model": "${var.model}",
+        "stream": false,
+        "max_tokens": ${var.max_tokens}
     }
     EOF
 
-    curl -v -s -X POST "$HOST_IP:$PORT/v1/models/$MODEL:predict" -H "Content-Type: application/json" -d "$PAYLOAD" && echo
+    curl -v -s -X POST "$HOST_IP:$PORT/openai/v1/completions" -H "Content-Type: application/json" -d "$PAYLOAD" && echo
 
   EOT
 }

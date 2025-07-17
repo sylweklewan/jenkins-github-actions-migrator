@@ -1,0 +1,166 @@
+INFO 07-13 05:45:30 [importing.py:53] Triton module has been replaced with a placeholder.
+INFO 07-13 05:45:30 [__init__.py:239] Automatically detected platform cuda.
+2025-07-13 05:45:35.518 1 kserve INFO [storage.py:download():64] Copying contents of /mnt/models to local
+2025-07-13 05:45:35.518 1 kserve INFO [storage.py:download():110] Successfully copied /mnt/models to None
+2025-07-13 05:45:35.518 1 kserve INFO [storage.py:download():111] Model downloaded in 0.00034557500021037413 seconds.
+2025-07-13 05:45:35.575 1 kserve INFO [model_server.py:register_model():402] Registering model: deepseek
+2025-07-13 05:45:35.578 1 kserve INFO [model_server.py:setup_event_loop():282] Setting max asyncio worker threads as 8
+INFO 07-13 05:45:47 [config.py:717] This model supports multiple tasks: {'reward', 'score', 'generate', 'classify', 'embed'}. Defaulting to 'generate'.
+INFO 07-13 05:45:47 [config.py:2003] Chunked prefill is enabled with max_num_batched_tokens=8192.
+INFO 07-13 05:45:56 [__init__.py:239] Automatically detected platform cuda.
+INFO 07-13 05:46:00 [core.py:58] Initializing a V1 LLM engine (v0.8.5) with config: model='/mnt/models', speculative_config=None, tokenizer='/mnt/models', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, override_neuron_config=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=65536, download_dir=None, load_format=LoadFormat.AUTO, tensor_parallel_size=1, pipeline_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto,  device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='auto', reasoning_backend=None), observability_config=ObservabilityConfig(show_hidden_metrics=False, otlp_traces_endpoint=None, collect_model_forward_time=False, collect_model_execute_time=False), seed=None, served_model_name=/mnt/models, num_scheduler_steps=1, multi_step_stream_outputs=True, enable_prefix_caching=True, chunked_prefill_enabled=True, use_async_output_proc=True, disable_mm_preprocessor_cache=False, mm_processor_kwargs=None, pooler_config=None, compilation_config={"level":3,"custom_ops":["none"],"splitting_ops":["vllm.unified_attention","vllm.unified_attention_with_output"],"use_inductor":true,"compile_sizes":[],"use_cudagraph":true,"cudagraph_num_of_warmups":1,"cudagraph_capture_sizes":[512,504,496,488,480,472,464,456,448,440,432,424,416,408,400,392,384,376,368,360,352,344,336,328,320,312,304,296,288,280,272,264,256,248,240,232,224,216,208,200,192,184,176,168,160,152,144,136,128,120,112,104,96,88,80,72,64,56,48,40,32,24,16,8,4,2,1],"max_capture_size":512}
+2025-07-13 05:46:01,141 - INFO - flashinfer.jit: Prebuilt kernels not found, using JIT backend
+WARNING 07-13 05:46:02 [utils.py:2522] Methods determine_num_available_blocks,device_config,get_cache_block_size_bytes,initialize_cache not implemented in <vllm.v1.worker.gpu_worker.Worker object at 0x7a5940c944a0>
+INFO 07-13 05:46:03 [parallel_state.py:1004] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, TP rank 0
+INFO 07-13 05:46:03 [cuda.py:221] Using Flash Attention backend on V1 engine.
+INFO 07-13 05:46:03 [topk_topp_sampler.py:44] Currently, FlashInfer top-p & top-k sampling sampler is disabled because FlashInfer>=v0.2.3 is not backward compatible. Falling back to the PyTorch-native implementation of top-p & top-k sampling.
+INFO 07-13 05:46:03 [gpu_model_runner.py:1329] Starting to load model /mnt/models...
+Loading safetensors checkpoint shards:   0% Completed | 0/2 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  50% Completed | 1/2 [00:05<00:05,  5.61s/it]
+Loading safetensors checkpoint shards: 100% Completed | 2/2 [00:20<00:00, 10.96s/it]
+Loading safetensors checkpoint shards: 100% Completed | 2/2 [00:20<00:00, 10.16s/it]
+
+INFO 07-13 05:46:25 [loader.py:458] Loading weights took 20.83 seconds
+INFO 07-13 05:46:25 [gpu_model_runner.py:1347] Model loading took 12.5709 GiB and 21.689305 seconds
+INFO 07-13 05:46:38 [backends.py:420] Using cache directory: /home/kserve/.cache/vllm/torch_compile_cache/0f61c1c915/rank_0_0 for vLLM's torch.compile
+INFO 07-13 05:46:38 [backends.py:430] Dynamo bytecode transform time: 12.52 s
+INFO 07-13 05:46:42 [backends.py:136] Cache the graph of shape None for later use
+INFO 07-13 05:47:22 [backends.py:148] Compiling a graph for general shape takes 43.64 s
+INFO 07-13 05:47:33 [monitor.py:33] torch.compile takes 56.16 s in total
+INFO 07-13 05:47:34 [kv_cache_utils.py:634] GPU KV cache size: 116,672 tokens
+INFO 07-13 05:47:34 [kv_cache_utils.py:637] Maximum concurrency for 65,536 tokens per request: 1.78x
+INFO 07-13 05:48:38 [gpu_model_runner.py:1686] Graph capturing finished in 64 secs, took 0.47 GiB
+INFO 07-13 05:48:38 [core.py:159] init engine (profile, create kv cache, warmup model) took 132.94 seconds
+INFO 07-13 05:48:38 [core_client.py:439] Core engine process 0 ready.
+2025-07-13 05:48:38.953 1 kserve INFO [utils.py:build_async_engine_client_from_engine_args():109] V1 AsyncLLM build complete
+2025-07-13 05:48:39.051 1 kserve INFO [server.py:_register_endpoints():108] OpenAI endpoints registered
+2025-07-13 05:48:39.052 1 kserve INFO [server.py:start():161] Starting uvicorn with 1 workers
+2025-07-13 05:48:39.258 1 uvicorn.error INFO:     Started server process [1]
+2025-07-13 05:48:39.258 1 uvicorn.error INFO:     Waiting for application startup.
+2025-07-13 05:48:39.271 1 kserve INFO [server.py:start():70] Starting gRPC server with 4 workers
+2025-07-13 05:48:39.271 1 kserve INFO [server.py:start():71] Starting gRPC server on [::]:8081
+2025-07-13 05:48:39.273 1 uvicorn.error INFO:     Application startup complete.
+2025-07-13 05:48:39.274 1 uvicorn.error INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+2025-07-13 05:49:28.005 1 kserve ERROR [errors.py:invalid_input_handler():131] Exception:
+Traceback (most recent call last):
+  File "/kserve-workspace/kserve/kserve/protocol/dataplane.py", line 347, in decode
+    body = orjson.loads(body)
+           ^^^^^^^^^^^^^^^^^^
+orjson.JSONDecodeError: unexpected character: line 2 column 16 (char 17)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/kserve/kserve/protocol/rest/v1_endpoints.py", line 81, in predict
+    infer_request, req_attributes = self.dataplane.decode(
+                                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/kserve/kserve/protocol/dataplane.py", line 349, in decode
+    raise InvalidInput(f"Unrecognized request format: {e}")
+kserve.errors.InvalidInput: Unrecognized request format: unexpected character: line 2 column 16 (char 17)
+2025-07-13 05:49:28.012 1 kserve.trace kserve.io.kserve.protocol.rest.v1_endpoints.predict: 0.008487701416015625 ['http_status:400', 'http_method:POST', 'time:wall']
+2025-07-13 05:49:28.012 uvicorn.access INFO:     192.168.122.10:51465 1 - "POST /v1/models/deepseek%3Apredict HTTP/1.1" 400 Bad Request
+2025-07-13 05:49:28.013 1 kserve.trace kserve.io.kserve.protocol.rest.v1_endpoints.predict: 0.006951999999998293 ['http_status:400', 'http_method:POST', 'time:cpu']
+2025-07-13 05:52:58.530 1 kserve.trace kserve.io.kserve.protocol.rest.v1_endpoints.predict: 0.0008306503295898438 ['http_status:500', 'http_method:POST', 'time:wall']
+2025-07-13 05:52:58.531 1 kserve.trace kserve.io.kserve.protocol.rest.v1_endpoints.predict: 0.0007990000000006603 ['http_status:500', 'http_method:POST', 'time:cpu']
+2025-07-13 05:52:58.531 1 kserve ERROR [errors.py:generic_exception_handler():143] Exception:
+Traceback (most recent call last):
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/timing_asgi/middleware.py", line 70, in __call__
+    await self.app(scope, receive, send_wrapper)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+2025-07-13 05:52:58.536 uvicorn.access INFO:     192.168.122.10:31474 1 - "POST /v1/models/deepseek%3Apredict HTTP/1.1" 500 Internal Server Error
+    await route.handle(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/kserve/kserve/protocol/rest/v1_endpoints.py", line 84, in predict
+    response, response_headers = await self.dataplane.infer(
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/kserve/kserve/protocol/dataplane.py", line 457, in infer
+    raise ValueError(
+ValueError: Model of type VLLMModel does not support inference
+2025-07-13 05:52:58.536 1 uvicorn.error ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/timing_asgi/middleware.py", line 70, in __call__
+    await self.app(scope, receive, send_wrapper)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/prod_venv/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/kserve/kserve/protocol/rest/v1_endpoints.py", line 84, in predict
+    response, response_headers = await self.dataplane.infer(
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kserve-workspace/kserve/kserve/protocol/dataplane.py", line 457, in infer
+    raise ValueError(
+ValueError: Model of type VLLMModel does not support inference
