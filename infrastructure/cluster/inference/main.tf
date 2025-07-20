@@ -7,9 +7,9 @@ data "kubernetes_namespace" "kserve" {
 
 
 
-resource "kubernetes_persistent_volume" "nextcoder_coder_pv" {
+resource "kubernetes_persistent_volume" "model_pv" {
   metadata {
-    name = "nextcoder-coder-pv"
+    name = join("-", [var.model, "pv"])
 
     labels = {
       type = "local"
@@ -32,8 +32,6 @@ resource "kubernetes_persistent_volume" "nextcoder_coder_pv" {
     storage_class_name               = "local-storage"
     volume_mode = "Filesystem"
 
-
-
     node_affinity {
       required {
         node_selector_term {
@@ -49,9 +47,9 @@ resource "kubernetes_persistent_volume" "nextcoder_coder_pv" {
 }
 
 
-resource "kubernetes_persistent_volume_claim" "nextcoder_coder_pvc" {
+resource "kubernetes_persistent_volume_claim" "model_pvc" {
   metadata {
-    name      = "nextcoder-coder-pvc"
+    name      = join("-", [var.model, "pvc"])
     namespace = data.kubernetes_namespace.kserve.metadata[0].name
   }
 
@@ -65,40 +63,40 @@ resource "kubernetes_persistent_volume_claim" "nextcoder_coder_pvc" {
     }
 
     storage_class_name = "local-storage"
-    volume_name        = kubernetes_persistent_volume.nextcoder_coder_pv.metadata[0].name
+    volume_name        = kubernetes_persistent_volume.model_pv.metadata[0].name
   }
 }
 
-resource "kubernetes_manifest" "nextcoder_inference" {
+resource "kubernetes_manifest" "translator_model_inference" {
   manifest = {
     apiVersion = "serving.kserve.io/v1beta1"
     kind       = "InferenceService"
     metadata = {
-       name      = "nextcoder"
+       name      = var.model
        namespace = data.kubernetes_namespace.kserve.metadata[0].name
     }
     spec = {
       predictor = {
         runtimeClassName = "nvidia"
         model = {
-          storageUri = "pvc://nextcoder-coder-pvc/nextcoder/"
+          storageUri = "pvc://${kubernetes_persistent_volume_claim.model_pvc.metadata[0].name}/${var.model}/"
           modelFormat = {
             name = "huggingface"
           }
           args = [
-            "--model_name=nextcoder",
+            "--model_name=${var.model}",
             "--model_dir=/mnt/models",
             "--trust-remote-code",
           ]
           resources = {
             requests = {
               memory = "10Gi"
-              cpu = "800m"
+              cpu = "1"
               "nvidia.com/gpu" = "1"
             }
             limits = {
               memory = "10Gi"
-              cpu = "900m"
+              cpu = "1"
               "nvidia.com/gpu" = "1"
             }
           }
@@ -108,23 +106,23 @@ resource "kubernetes_manifest" "nextcoder_inference" {
   }
 }
 
-resource "kubernetes_service" "nextcoder_coder_nodeport" {
+resource "kubernetes_service" "translator_model_nodeport" {
   metadata {
-    name      = "nextcoder-coder-nodeport"
+    name      = "${var.model}-nodeport"
     namespace = data.kubernetes_namespace.kserve.metadata[0].name
   }
 
   spec {
     selector = {
-      "serving.kserve.io/inferenceservice" = "nextcoder"
+      "serving.kserve.io/inferenceservice" = "${var.model}"
     }
 
     type = "NodePort" 
 
     port {
-      port        = 80        # Exposed service port
-      target_port = 8080      # Port on the pod (KServe predictor listens on 8080)
-      node_port   = 30080     # Optional fixed NodePort (or omit to let k8s assign)
+      port        = 80       
+      target_port = 8080      
+      node_port   = 30080     
     }
   }
 }
