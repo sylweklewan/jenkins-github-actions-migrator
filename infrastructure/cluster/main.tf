@@ -45,20 +45,20 @@ resource "helm_release" "kserve" {
     name  = "kserve.controller.deploymentMode"
     value = "RawDeployment"
   },
-  {
-    name  = "kserve.controller.gateway.ingressGateway.enableIstio"
-    value = "true"
-  },
-  {
-    name  = "kserve.controller.gateway.ingressGateway.istioGateway"
-    value = "istio-system/istio-ingressgateway"
-  },
+  # {
+  #   name  = "kserve.controller.gateway.ingressGateway.enableIstio"
+  #   value = "true"
+  # },
+  # {
+  #   name  = "kserve.controller.gateway.ingressGateway.istioGateway"
+  #   value = "istio-system/istio-ingressgateway"
+  # },
   {
     name  = "controllers.servingruntimes.enabled"
     value = "false"
   }
   ]
 
-  depends_on = [helm_release.istio_ingress_gateway, kubernetes_manifest.kserve_webhook_certificate] 
+  depends_on = [kubernetes_manifest.kserve_webhook_certificate] 
 }
 

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+HOST_IP="80.188.223.202"
+PORT="10434"
+MODEL="nextcoder"
+PROMPT='import socket
+
+def ping_exponential_backoff(host: str):'
+
+read -r -d '' PAYLOAD <<EOF
+{
+  "prompt": "implement bubble sort in C, of table of integers",
+  "model": "nextcoder",
+  "stream": false,
+  "max_tokens": 500
+}
+EOF
+
+curl -v -s -X POST "$HOST_IP:$PORT/openai/v1/completions" -H "Content-Type: application/json" -d "$PAYLOAD" && echo
+

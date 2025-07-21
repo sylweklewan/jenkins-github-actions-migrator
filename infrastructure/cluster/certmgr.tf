@@ -1,14 +1,3 @@
-# ----------------------
-# Install Cert-Manager (Required by KServe webhook)
-# ----------------------
-# data "http" "cert_manager_crds" {
-#   url = "https://github.com/cert-manager/cert-manager/releases/download/v1.15.0/cert-manager.crds.yaml"
-# }
-
-# resource "kubernetes_manifest" "cert_manager_crds" {
-#   manifest = data.http.cert_manager_crds.response_body
-# }
-
 resource "kubernetes_manifest" "kserve_selfsigned_issuer" {
   manifest = {
     apiVersion = "cert-manager.io/v1"

@@ -1,5 +1,6 @@
 resource "local_file" "curl_prompt_script_kserve" {
-  filename        = "curl-${var.model}.sh"
+  for_each = var.prompt
+  filename        = "curl-${var.model}-${each.key}.sh"
   file_permission = "0755"
 
   content = <<-EOT
@@ -10,7 +11,7 @@ resource "local_file" "curl_prompt_script_kserve" {
 
     read -r -d '' PAYLOAD <<EOF
     {
-        "prompt": "${var.prompt}",
+        "prompt": "${replace(each.value, "\n", "\\n")}",
         "model": "${var.model}",
         "stream": false,
         "max_tokens": ${var.max_tokens}

@@ -19,8 +19,8 @@ variable "model" {
 }
 
 variable "prompt" {
-  description = "The input payload or prompt for the model"
-  type        = string
+  description = "The sample inputs payload or prompt for the model"
+  type        = map(string)
 }
 
 variable "max_tokens" {

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+HOST_IP="80.188.223.202"
+PORT="10401"
+
+read -r -d '' PAYLOAD <<EOF
+{
+    "prompt": "finish github action:\nname: Java Maven Build\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n\n    steps:\n      - name: Checkout repository\n        uses: actions/checkout@v4\n\n",
+    "model": "starcoder",
+    "stream": false,
+    "max_tokens": 500
+}
+EOF
+
+curl -v -s -X POST "$HOST_IP:$PORT/openai/v1/completions" -H "Content-Type: application/json" -d "$PAYLOAD" && echo
+

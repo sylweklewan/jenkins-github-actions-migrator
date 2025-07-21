@@ -1,0 +1,15 @@
+#!/bin/bash
+
+HOST_IP="80.188.223.202"
+PORT="10434"
+MODEL="deepseek"
+PROMPT='Implement bubble sort in C'
+
+read -r -d '' PAYLOAD <<EOF
+{
+  "inputs": "Implement bubble sort in C"
+}
+EOF
+
+curl -v -s -X POST "$HOST_IP:$PORT/v1/models/$MODEL:predict" -H "Content-Type: application/json" -d "$PAYLOAD" && echo
+
