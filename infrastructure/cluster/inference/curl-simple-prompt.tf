@@ -1,5 +1,5 @@
 resource "local_file" "curl_simple_prompt" {
-  for_each = var.prompt
+  for_each        = var.prompt
   filename        = "curl-${var.model}-${each.key}.sh"
   file_permission = "0755"
 

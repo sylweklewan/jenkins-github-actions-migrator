@@ -23,5 +23,5 @@ provider "helm" {
 }
 
 provider "local" {
-  
+
 }

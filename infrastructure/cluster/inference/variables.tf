@@ -4,12 +4,12 @@ variable "kubeconfig_path" {
 }
 
 variable "host_ip" {
-  type = string
+  type        = string
   description = "machine ip where cluster is running"
 }
 
 variable "inference_port" {
-  type = number
+  type        = number
   description = "port on which inference service is listenning"
 }
 
@@ -24,16 +24,21 @@ variable "prompt" {
 }
 
 variable "max_tokens" {
-  type = number
+  type        = number
   description = "Max number of tokens in response"
 }
 
 variable "jenkins_pipeline_files" {
-  type = string
+  type        = map(string)
   description = "contains path to jenkins files that should be translated"
 }
 
 variable "jenkins_pipeline_prompt_start" {
+  type        = string
+  description = "prompt introduction to jenkins file"
+}
+
+variable "model_storage_size" {
   type = string
-  description = "value"
+  description = "size of pv holding model"
 }

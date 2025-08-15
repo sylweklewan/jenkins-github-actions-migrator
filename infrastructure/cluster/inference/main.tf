@@ -18,19 +18,19 @@ resource "kubernetes_persistent_volume" "model_pv" {
 
   spec {
     capacity = {
-      storage = "30Gi"
+      storage = var.model_storage_size
     }
 
     persistent_volume_source {
       local {
-            path = "/home/user/models"
+        path = "/home/user/models"
       }
     }
 
     access_modes                     = ["ReadWriteOnce"]
     persistent_volume_reclaim_policy = "Retain"
     storage_class_name               = "local-storage"
-    volume_mode = "Filesystem"
+    volume_mode                      = "Filesystem"
 
     node_affinity {
       required {
@@ -38,7 +38,7 @@ resource "kubernetes_persistent_volume" "model_pv" {
           match_expressions {
             key      = "kubernetes.io/hostname"
             operator = "In"
-            values   = ["4d37decc-54d9-4baa-871a-72b0bf11658d"]  # replace this with your actual node name
+            values   = ["4d37decc-54d9-4baa-871a-72b0bf11658d"] # replace this with your actual node name
           }
         }
       }
@@ -58,7 +58,7 @@ resource "kubernetes_persistent_volume_claim" "model_pvc" {
 
     resources {
       requests = {
-        storage = "30Gi"
+        storage = var.model_storage_size
       }
     }
 
@@ -72,8 +72,8 @@ resource "kubernetes_manifest" "translator_model_inference" {
     apiVersion = "serving.kserve.io/v1beta1"
     kind       = "InferenceService"
     metadata = {
-       name      = var.model
-       namespace = data.kubernetes_namespace.kserve.metadata[0].name
+      name      = var.model
+      namespace = data.kubernetes_namespace.kserve.metadata[0].name
     }
     spec = {
       predictor = {
@@ -90,13 +90,13 @@ resource "kubernetes_manifest" "translator_model_inference" {
           ]
           resources = {
             requests = {
-              memory = "10Gi"
-              cpu = "1"
+              memory           = "10Gi"
+              cpu              = "1"
               "nvidia.com/gpu" = "1"
             }
             limits = {
-              memory = "10Gi"
-              cpu = "1"
+              memory           = "10Gi"
+              cpu              = "1"
               "nvidia.com/gpu" = "1"
             }
           }
@@ -117,12 +117,12 @@ resource "kubernetes_service" "translator_model_nodeport" {
       "serving.kserve.io/inferenceservice" = "${var.model}"
     }
 
-    type = "NodePort" 
+    type = "NodePort"
 
     port {
-      port        = 80       
-      target_port = 8080      
-      node_port   = 30080     
+      port        = 80
+      target_port = 8080
+      node_port   = 30080
     }
   }
 }

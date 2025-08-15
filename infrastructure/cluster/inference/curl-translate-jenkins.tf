@@ -1,5 +1,5 @@
 resource "local_file" "curl_translate_jenkins" {
-  for_each = var.jenkins_pipeline_files
+  for_each        = var.jenkins_pipeline_files
   filename        = "curl-jenkins-${var.model}-${each.key}.sh"
   file_permission = "0755"
 
@@ -11,7 +11,7 @@ resource "local_file" "curl_translate_jenkins" {
 
     read -r -d '' PAYLOAD <<EOF
     {
-        "prompt": "${var.jenkins_pipeline_prompt_start} ${replace(each.value, "\n", "\\n")}",
+        "prompt": "${var.jenkins_pipeline_prompt_start}\\n${replace(file(each.value), "\n", "\\n")}",
         "model": "${var.model}",
         "stream": false,
         "max_tokens": ${var.max_tokens}
