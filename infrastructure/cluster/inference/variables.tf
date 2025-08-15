@@ -27,3 +27,13 @@ variable "max_tokens" {
   type = number
   description = "Max number of tokens in response"
 }
+
+variable "jenkins_pipeline_files" {
+  type = string
+  description = "contains path to jenkins files that should be translated"
+}
+
+variable "jenkins_pipeline_prompt_start" {
+  type = string
+  description = "value"
+}
