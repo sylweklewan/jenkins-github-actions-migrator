@@ -1,0 +1,23 @@
+## language:node
+## type:simple workflow
+## operation:version
+
+name: Node Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: node:22.18.0-alpine3.22
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show Node.js version
+        run: node --version

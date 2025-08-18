@@ -39,6 +39,11 @@ variable "jenkins_pipeline_prompt_start" {
 }
 
 variable "model_storage_size" {
-  type = string
+  type        = string
   description = "size of pv holding model"
+}
+
+variable "embedding_model" {
+  description = "model to be used to generate embeddings"
+  type        = string
 }

@@ -1,7 +1,6 @@
-# # # KServe with RawDeployment
 data "kubernetes_namespace" "kserve" {
   metadata {
-    name = "kserve"
+    name = var.namespace
   }
 }
 
@@ -23,7 +22,7 @@ resource "kubernetes_persistent_volume" "model_pv" {
 
     persistent_volume_source {
       local {
-        path = "/home/user/models"
+        path = var.model_local_path  #"/home/user/models"
       }
     }
 
@@ -38,7 +37,7 @@ resource "kubernetes_persistent_volume" "model_pv" {
           match_expressions {
             key      = "kubernetes.io/hostname"
             operator = "In"
-            values   = ["4d37decc-54d9-4baa-871a-72b0bf11658d"] # replace this with your actual node name
+            values   = var.node_name  #["4d37decc-54d9-4baa-871a-72b0bf11658d"] # replace this with your actual node name
           }
         }
       }
@@ -67,7 +66,7 @@ resource "kubernetes_persistent_volume_claim" "model_pvc" {
   }
 }
 
-resource "kubernetes_manifest" "translator_model_inference" {
+resource "kubernetes_manifest" "model_serving" {
   manifest = {
     apiVersion = "serving.kserve.io/v1beta1"
     kind       = "InferenceService"
@@ -83,11 +82,16 @@ resource "kubernetes_manifest" "translator_model_inference" {
           modelFormat = {
             name = "huggingface"
           }
-          args = [
+        #   args = [
+        #     "--model_name=${var.model}",
+        #     "--model_dir=/mnt/models",
+        #     "--trust-remote-code",
+        #   ]
+          args = concat([
             "--model_name=${var.model}",
             "--model_dir=/mnt/models",
-            "--trust-remote-code",
-          ]
+            "--trust-remote-code",            
+          ], var.inference_service_args) #"--task=embed"
           resources = {
             requests = {
               memory           = "10Gi"
@@ -107,47 +111,7 @@ resource "kubernetes_manifest" "translator_model_inference" {
 }
 
 
-resource "kubernetes_manifest" "embedding_model_inference" {
-  manifest = {
-    apiVersion = "serving.kserve.io/v1beta1"
-    kind       = "InferenceService"
-    metadata = {
-      name      = var.embedding_model
-      namespace = data.kubernetes_namespace.kserve.metadata[0].name
-    }
-    spec = {
-      predictor = {
-        runtimeClassName = "nvidia"
-        model = {
-          storageUri = "pvc://${kubernetes_persistent_volume_claim.model_pvc.metadata[0].name}/${var.embedding_model}/"
-          modelFormat = {
-            name = "huggingface"
-          }
-          args = [
-            "--model_name=${var.model}",
-            "--model_dir=/mnt/models",
-            "--trust-remote-code",
-            "--task=embed"
-          ]
-          resources = {
-            requests = {
-              memory           = "10Gi"
-              cpu              = "1"
-              "nvidia.com/gpu" = "1"
-            }
-            limits = {
-              memory           = "10Gi"
-              cpu              = "1"
-              "nvidia.com/gpu" = "1"
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-resource "kubernetes_service" "translator_model_nodeport" {
+resource "kubernetes_service" "model_nodeport" {
   metadata {
     name      = "${var.model}-nodeport"
     namespace = data.kubernetes_namespace.kserve.metadata[0].name
@@ -163,7 +127,7 @@ resource "kubernetes_service" "translator_model_nodeport" {
     port {
       port        = 80
       target_port = 8080
-      node_port   = 30080
+      node_port   = var.inference_node_port  #30080
     }
   }
 }

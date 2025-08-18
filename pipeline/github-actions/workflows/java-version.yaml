@@ -1,0 +1,23 @@
+## language:java 
+## type:simple workflow
+## operation:version
+
+name: Maven Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.11-eclipse-temurin-21-alpine
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show Maven version
+        run: mvn --version
