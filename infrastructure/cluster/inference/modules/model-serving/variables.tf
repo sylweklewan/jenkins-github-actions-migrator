@@ -26,6 +26,7 @@ variable "node_name" {
 variable "inference_service_args" {
   description = "additional arguments to be passed to modele sering process"
   type = list(string)
+  default = []
 }
 
 variable "inference_node_port" {
