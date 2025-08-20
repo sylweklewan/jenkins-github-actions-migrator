@@ -4,8 +4,6 @@ data "kubernetes_namespace" "kserve" {
   }
 }
 
-
-
 resource "kubernetes_persistent_volume" "model_pv" {
   metadata {
     name = join("-", [var.model, "pv"])
@@ -22,7 +20,7 @@ resource "kubernetes_persistent_volume" "model_pv" {
 
     persistent_volume_source {
       local {
-        path = var.model_local_path  #"/home/user/models"
+        path = var.model_local_path 
       }
     }
 
@@ -37,7 +35,7 @@ resource "kubernetes_persistent_volume" "model_pv" {
           match_expressions {
             key      = "kubernetes.io/hostname"
             operator = "In"
-            values   = var.node_name  #["4d37decc-54d9-4baa-871a-72b0bf11658d"] # replace this with your actual node name
+            values   = var.node_name 
           }
         }
       }
@@ -82,16 +80,11 @@ resource "kubernetes_manifest" "model_serving" {
           modelFormat = {
             name = "huggingface"
           }
-        #   args = [
-        #     "--model_name=${var.model}",
-        #     "--model_dir=/mnt/models",
-        #     "--trust-remote-code",
-        #   ]
           args = concat([
             "--model_name=${var.model}",
             "--model_dir=/mnt/models",
             "--trust-remote-code",            
-          ], var.inference_service_args) #"--task=embed"
+          ], var.inference_service_args)
           resources = {
             requests = {
               memory           = "10Gi"
@@ -127,7 +120,7 @@ resource "kubernetes_service" "model_nodeport" {
     port {
       port        = 80
       target_port = 8080
-      node_port   = var.inference_node_port  #30080
+      node_port   = var.inference_node_port
     }
   }
 }
