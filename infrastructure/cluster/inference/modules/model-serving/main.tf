@@ -80,10 +80,10 @@ resource "kubernetes_manifest" "model_serving" {
           modelFormat = {
             name = "huggingface"
           }
-          args = concat([
-            "--model_name=${var.model}",
-            "--model_dir=/mnt/models",
-            "--trust-remote-code",            
+           args = concat([
+             "--model_name=${var.model}",
+             "--model_dir=/mnt/models",
+             "--trust-remote-code",            
           ], var.inference_service_args)
           resources = {
             requests = {
