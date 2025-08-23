@@ -33,3 +33,8 @@ variable "inference_node_port" {
     description = "node port where inference service will be exposed"
     type = number
 }
+
+variable "memory_limit" {
+  description = "memory available for model serving pod"
+  type = string
+}

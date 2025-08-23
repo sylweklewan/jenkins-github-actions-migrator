@@ -87,12 +87,12 @@ resource "kubernetes_manifest" "model_serving" {
           ], var.inference_service_args)
           resources = {
             requests = {
-              memory           = "10Gi"
+              memory           = var.memory_limit
               cpu              = "1"
               "nvidia.com/gpu" = "1"
             }
             limits = {
-              memory           = "10Gi"
+              memory           = var.memory_limit
               cpu              = "1"
               "nvidia.com/gpu" = "1"
             }
