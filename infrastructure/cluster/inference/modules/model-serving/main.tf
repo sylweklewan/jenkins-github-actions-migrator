@@ -20,7 +20,7 @@ resource "kubernetes_persistent_volume" "model_pv" {
 
     persistent_volume_source {
       local {
-        path = var.model_local_path 
+        path = var.model_local_path
       }
     }
 
@@ -35,7 +35,7 @@ resource "kubernetes_persistent_volume" "model_pv" {
           match_expressions {
             key      = "kubernetes.io/hostname"
             operator = "In"
-            values   = var.node_name 
+            values   = var.node_name
           }
         }
       }
@@ -80,10 +80,10 @@ resource "kubernetes_manifest" "model_serving" {
           modelFormat = {
             name = "huggingface"
           }
-           args = concat([
-             "--model_name=${var.model}",
-             "--model_dir=/mnt/models",
-             "--trust-remote-code",            
+          args = concat([
+            "--model_name=${var.model}",
+            "--model_dir=/mnt/models",
+            "--trust-remote-code",
           ], var.inference_service_args)
           resources = {
             requests = {

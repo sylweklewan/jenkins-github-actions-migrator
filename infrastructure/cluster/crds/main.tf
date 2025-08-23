@@ -5,12 +5,12 @@ resource "kubernetes_namespace" "kserve" {
 }
 
 resource "helm_release" "kserve_crd" {
-  name       = "kserve-crd"
+  name      = "kserve-crd"
   namespace = kubernetes_namespace.kserve.metadata[0].name
-  version    = "v0.15.2"
+  version   = "v0.15.2"
 
-  repository = "oci://ghcr.io/kserve/charts"
-  chart      = "kserve-crd"
+  repository       = "oci://ghcr.io/kserve/charts"
+  chart            = "kserve-crd"
   create_namespace = false
 }
 
@@ -24,8 +24,8 @@ resource "helm_release" "cert_manager" {
 
   set = [
     {
-    name  = "installCRDs"
-    value = "true"
-  }
+      name  = "installCRDs"
+      value = "true"
+    }
   ]
 }

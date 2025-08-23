@@ -49,6 +49,16 @@ variable "embedding_model" {
 }
 
 variable "embedding_port" {
-  type = number
+  type        = number
   description = "port on which embeddings model serving is listenning"
+}
+
+variable "vector_database" {
+  type        = string
+  description = "name of vector database"
+}
+
+variable "vector_database_storage_size" {
+  type        = string
+  description = "storage size for vector database"
 }

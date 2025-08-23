@@ -5,23 +5,23 @@ data "kubernetes_namespace" "kserve" {
 }
 
 resource "helm_release" "kserve" {
-  name       = "kserve"
-  repository = "oci://ghcr.io/kserve/charts"
-  chart      = "kserve"
-  version    = "v0.15.2"
-  namespace = data.kubernetes_namespace.kserve.metadata[0].name
+  name             = "kserve"
+  repository       = "oci://ghcr.io/kserve/charts"
+  chart            = "kserve"
+  version          = "v0.15.2"
+  namespace        = data.kubernetes_namespace.kserve.metadata[0].name
   create_namespace = false
 
-  set= [{
+  set = [{
     name  = "kserve.controller.deploymentMode"
     value = "RawDeployment"
-  },
-  {
-    name  = "controllers.servingruntimes.enabled"
-    value = "false"
-  }
+    },
+    {
+      name  = "controllers.servingruntimes.enabled"
+      value = "false"
+    }
   ]
 
-  depends_on = [kubernetes_manifest.kserve_webhook_certificate] 
+  depends_on = [kubernetes_manifest.kserve_webhook_certificate]
 }
 

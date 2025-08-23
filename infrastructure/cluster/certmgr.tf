@@ -36,9 +36,9 @@ resource "kubernetes_manifest" "kserve_webhook_certificate" {
       }
     }
     spec = {
-      secretName = "kserve-webhook-server-cert"
-      duration   = "8760h" # 1 year
-      renewBefore = "720h" # 30 days before expiry
+      secretName  = "kserve-webhook-server-cert"
+      duration    = "8760h" # 1 year
+      renewBefore = "720h"  # 30 days before expiry
 
       subject = {
         organizations = ["KServe"]
