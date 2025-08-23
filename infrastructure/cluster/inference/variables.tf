@@ -10,7 +10,7 @@ variable "host_ip" {
 
 variable "inference_port" {
   type        = number
-  description = "port on which inference service is listenning"
+  description = "port on which inference model serving is listenning"
 }
 
 variable "model" {
@@ -46,4 +46,9 @@ variable "model_storage_size" {
 variable "embedding_model" {
   description = "model to be used to generate embeddings"
   type        = string
+}
+
+variable "embedding_port" {
+  type = number
+  description = "port on which embeddings model serving is listenning"
 }
