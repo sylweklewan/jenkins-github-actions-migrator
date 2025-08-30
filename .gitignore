@@ -40,3 +40,4 @@ terraform.rc
 *.tfvars.bak
 curl*sh
 logs/
+rag/go/store-embeddings/bin/
