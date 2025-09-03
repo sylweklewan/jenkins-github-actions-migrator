@@ -1,17 +1,19 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type GitHubActionDefinition struct {
-	file    string
-	content string
-	lables  map[string]string
+	File    string            `json:"file"`
+	Content string            `json:"content"`
+	Lables  map[string]string `json:"labels"`
 }
 
 func main() {
@@ -22,9 +24,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, af := range actionsFiles {
-		fmt.Println(af.Name())
+
+	githubActionDefinitions, err := PrepareGitHubActionDefinitions(*actionsDir, actionsFiles)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	jsonDefinitions, err := json.Marshal(githubActionDefinitions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(jsonDefinitions))
 
 }
 
@@ -47,7 +58,6 @@ func PrepareGitHubActionDefinitions(actionsDir string, githubActionDefinitionsEn
 		if err != nil {
 			return nil, err
 		}
-
 		githubActionDefinitions = append(githubActionDefinitions, *action)
 	}
 	return githubActionDefinitions, nil
@@ -56,9 +66,9 @@ func PrepareGitHubActionDefinitions(actionsDir string, githubActionDefinitionsEn
 func NewGitHubActionDefinition(absActionPath string, actionContent string) (*GitHubActionDefinition, error) {
 	definition := new(GitHubActionDefinition)
 
-	definition.file = absActionPath
-	definition.content = actionContent
-	definition.lables = generateLabels(actionContent)
+	definition.File = absActionPath
+	definition.Content = actionContent
+	definition.Lables = generateLabels(actionContent)
 
 	return definition, nil
 }
@@ -66,22 +76,15 @@ func NewGitHubActionDefinition(absActionPath string, actionContent string) (*Git
 func generateLabels(actionContent string) map[string]string {
 	labels := make(map[string]string)
 
+	lines := strings.Split(actionContent, "\n")
+
+	for _, line := range lines {
+		line, hasPrefix := strings.CutPrefix(line, "##")
+		if !hasPrefix {
+			break
+		}
+		keyAndValue := strings.Split(line, ":")
+		labels[strings.TrimSpace(keyAndValue[0])] = strings.TrimSpace(keyAndValue[1])
+	}
 	return labels
 }
-
-// func main() {
-//     file, err := os.Open("text.txt")
-//     if err != nil {
-//         fmt.Println(err)
-//     }
-//     defer file.Close()
-
-//     scanner := bufio.NewScanner(file)
-//     for scanner.Scan() {
-//         fmt.Println(scanner.Text())
-//     }
-
-//     if err := scanner.Err(); err != nil {
-//         fmt.Println(err)
-//     }
-// }

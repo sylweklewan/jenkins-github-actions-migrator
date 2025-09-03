@@ -69,6 +69,7 @@ resource "kubernetes_deployment" "vector_database" {
     labels = {
       app = var.vector_database
     }
+    namespace = data.kubernetes_namespace.kserve.metadata[0].name
   }
 
   spec {
@@ -103,12 +104,12 @@ resource "kubernetes_deployment" "vector_database" {
 
           resources {
             limits = {
-              cpu              = "500m"
+              cpu              = "200m"
               memory           = "1Gi"
               "nvidia.com/gpu" = "1"
             }
             requests = {
-              cpu              = "250m"
+              cpu              = "100m"
               memory           = "512Mi"
               "nvidia.com/gpu" = "1"
             }

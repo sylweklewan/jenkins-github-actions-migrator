@@ -29,7 +29,7 @@ module "vector_database" {
   node_name                      = ["4d37decc-54d9-4baa-871a-72b0bf11658d"]
   vector_database_local_path     = "/home/user/vector_db"
   vector_database_storage_size   = var.vector_database_storage_size
-  vector_database_grpc_node_port = 30070
-  vector_database_http_node_port = 30060
+  vector_database_grpc_node_port = 30048
+  vector_database_http_node_port = 30070
 }
 
