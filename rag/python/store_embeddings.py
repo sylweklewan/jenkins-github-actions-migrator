@@ -6,6 +6,7 @@ import base64
 from langchain_openai import OpenAIEmbeddings
 from qdrant_client import QdrantClient
 from langchain_qdrant import QdrantVectorStore
+from qdrant_client.models import VectorParams, Distance
 
 
 def to_entry(s : str) -> tuple[str, str]:
@@ -26,8 +27,8 @@ def read_labels (file_content: str):
     for line in str.splitlines(): 
         if line.startswith("##"): 
             line = line.replace("##", "", 1)
-            kv = line.split(":")
-            lables[kv[0]] = kv[1]
+            kv =  line.split(":")
+            lables[kv[0].strip()] = kv[1].strip()
     
 
 def load_documents(folder: Path):
@@ -36,7 +37,7 @@ def load_documents(folder: Path):
             "id": hashlib.md5(content.encode("utf-8")).hexdigest(),
             "file": file.name, 
             "content": content, 
-            "labels": json.dumps(dict(filter(None, (map(to_entry, content.splitlines()))))) 
+            "payload": dict(filter(None, (map(to_entry, content.splitlines()))))
          }
         for file in folder.glob("*.yaml")
         if (content := file.read_text(encoding="utf-8").strip())
@@ -49,25 +50,42 @@ def main():
     args = parser.parse_args()
     documents = load_documents(args.folder)
 
-    for doc in documents:
-        print(f"{doc['file']} -> {len(doc['content'].split())} words | {doc['labels']} meta")
-
     embeddings = OpenAIEmbeddings(
-        base_url="http://80.188.223.202:10433/v1",
+        base_url="http://80.188.223.202:10433/openai/v1",
         model="qwen3",
         api_key="aaa"
         )
-    qdrant_client = QdrantClient(host="80.188.223.202", port=10401, prefer_grpc=True)
 
-    vectorstore = QdrantVectorStore(
-        client=qdrant_client,
-        collection_name="github_actions_version",
-        embedding=embeddings
+    
+    for doc in documents:
+        doc['vector'] = embeddings.embed_documents([doc['content']])[0]
+        print(f"{doc['file']} -> {len(doc['content'].split())} words | {doc['payload']} | {len(doc['vector'])} embeddings")
+        doc.pop("content")
+        doc.pop("file")
+    
+    qdrant_client = QdrantClient(host="80.188.223.202", port=10401)
+
+    qdrant_client
+    if not qdrant_client.collection_exists("github_actions_version"):
+      qdrant_client.create_collection(
+      collection_name="github_actions_version",
+      vectors_config=VectorParams(size=4096, distance=Distance.COSINE),
+   )
+      
+    qdrant_client.upsert (
+        collection_name ="github_actions_version",
+        points = documents
     )
 
-    if documents:
-        vectorstore.add_documents(documents)
-        print(f"✅ Inserted {len(documents)} docs into Qdrant")
+    # vectorstore = QdrantVectorStore(
+    #     client=qdrant_client,
+    #     collection_name="github_actions_version",
+    #     embedding=embeddings
+    # )
+
+    # if documents:
+    #     vectorstore.add_documents(documents)
+    #     print(f"✅ Inserted {len(documents)} docs into Qdrant")
 
 if __name__ == "__main__":
     main()

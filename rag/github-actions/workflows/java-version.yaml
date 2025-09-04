@@ -1,6 +1,6 @@
-## language:java 
-## type:simple workflow
-## operation:version
+##language:java
+##type:simple workflow
+##operation:version
 
 name: Maven Build
 

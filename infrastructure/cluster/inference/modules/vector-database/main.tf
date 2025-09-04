@@ -135,6 +135,7 @@ resource "kubernetes_deployment" "vector_database" {
 resource "kubernetes_service" "vector_database_nodeport" {
   metadata {
     name = "${var.vector_database}-nodeport"
+    namespace = data.kubernetes_namespace.kserve.metadata[0].name
   }
 
   spec {
@@ -146,14 +147,16 @@ resource "kubernetes_service" "vector_database_nodeport" {
 
     port {
       name        = "http"
-      port        = 6333
-      target_port = var.vector_database_http_node_port
+      target_port        = 6333
+      port = 6333
+      node_port = var.vector_database_http_node_port
     }
 
     port {
       name        = "grpc"
       port        = 6334
-      target_port = var.vector_database_grpc_node_port
+      target_port = 6334
+      node_port = var.vector_database_grpc_node_port
     }
   }
 }

@@ -1,6 +1,6 @@
-## language:go 
-## type:simple workflow
-## operation:version
+##language:go
+##type:simple workflow
+##operation:version
 name: Go Build
 
 on:

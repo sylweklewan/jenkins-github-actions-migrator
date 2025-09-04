@@ -1,6 +1,6 @@
-## language:node
-## type:simple workflow
-## operation:version
+##language:node
+##type:simple workflow
+##operation:version
 
 name: Node Build
 
