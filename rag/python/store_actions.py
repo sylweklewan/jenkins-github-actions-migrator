@@ -5,7 +5,7 @@ import hashlib
 import base64
 from langchain_openai import OpenAIEmbeddings
 from qdrant_client import QdrantClient
-from langchain_qdrant import QdrantVectorStore
+
 from qdrant_client.models import VectorParams, Distance
 
 
@@ -65,27 +65,17 @@ def main():
     
     qdrant_client = QdrantClient(host="80.188.223.202", port=10401)
 
-    qdrant_client
     if not qdrant_client.collection_exists("github_actions_version"):
       qdrant_client.create_collection(
       collection_name="github_actions_version",
       vectors_config=VectorParams(size=4096, distance=Distance.COSINE),
-   )
+    )
       
     qdrant_client.upsert (
         collection_name ="github_actions_version",
         points = documents
     )
 
-    # vectorstore = QdrantVectorStore(
-    #     client=qdrant_client,
-    #     collection_name="github_actions_version",
-    #     embedding=embeddings
-    # )
-
-    # if documents:
-    #     vectorstore.add_documents(documents)
-    #     print(f"✅ Inserted {len(documents)} docs into Qdrant")
 
 if __name__ == "__main__":
     main()

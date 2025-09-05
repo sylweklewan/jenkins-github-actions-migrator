@@ -62,3 +62,8 @@ variable "vector_database_storage_size" {
   type        = string
   description = "storage size for vector database"
 }
+
+variable "node_name" {
+  type        = string
+  description = "name of node to set up storage pv"
+}

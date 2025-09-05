@@ -1,22 +1,31 @@
 ##language:go
 ##type:simple workflow
 ##operation:version
-name: Go Build
+name: Go Version
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/* ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, feature/* ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: golang:1.25.0-alpine3.22
     steps:
+        # Set up go
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.25.0
+
+        # Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
+        # Display version
       - name: Display Go version
         run: go version
+      
+      - name: Test code
+        run: go test -v ./...
