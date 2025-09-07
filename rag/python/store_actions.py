@@ -21,23 +21,13 @@ def to_entry(s : str) -> tuple[str, str]:
     
     key, value = cleaned.split(":", 1)
     return key, value
-
-def read_labels (file_content: str): 
-    lables = {}
-    for line in str.splitlines(): 
-        if line.startswith("##"): 
-            line = line.replace("##", "", 1)
-            kv =  line.split(":")
-            lables[kv[0].strip()] = kv[1].strip()
     
 
 def load_documents(folder: Path):
     return [
         {
             "id": hashlib.md5(content.encode("utf-8")).hexdigest(),
-            "file": file.name, 
-            "content": content, 
-            "payload": dict(filter(None, (map(to_entry, content.splitlines()))))
+            "payload": {"file": file.name, "content": content} | dict(filter(None, (map(to_entry, content.splitlines()))))
          }
         for file in folder.glob("*.yaml")
         if (content := file.read_text(encoding="utf-8").strip())
@@ -55,14 +45,11 @@ def main():
         model="qwen3",
         api_key="aaa"
         )
-
     
     for doc in documents:
-        doc['vector'] = embeddings.embed_documents([doc['content']])[0]
-        print(f"{doc['file']} -> {len(doc['content'].split())} words | {doc['payload']} | {len(doc['vector'])} embeddings")
-        doc.pop("content")
-        doc.pop("file")
-    
+        doc['vector'] = embeddings.embed_documents([doc['payload']['content']])[0]
+        print(f"{doc['payload']['file']} -> {len(doc['payload']['content'].split())} words | {doc['payload']} | {len(doc['vector'])} embeddings")
+
     qdrant_client = QdrantClient(host="80.188.223.202", port=10401)
 
     if not qdrant_client.collection_exists("github_actions_version"):
@@ -70,6 +57,8 @@ def main():
       collection_name="github_actions_version",
       vectors_config=VectorParams(size=4096, distance=Distance.COSINE),
     )
+      
+    print(documents)
       
     qdrant_client.upsert (
         collection_name ="github_actions_version",

@@ -5,9 +5,9 @@ name: Go Version
 
 on:
   push:
-    branches: [ main, feature/* ]
+    branches: [ main]
   pull_request:
-    branches: [ main, feature/* ]
+    branches: [ main]
 
 jobs:
   build:
@@ -26,6 +26,3 @@ jobs:
         # Display version
       - name: Display Go version
         run: go version
-      
-      - name: Test code
-        run: go test -v ./...
