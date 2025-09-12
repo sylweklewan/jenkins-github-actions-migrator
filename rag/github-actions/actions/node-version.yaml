@@ -1,0 +1,20 @@
+##language:node
+##type:action
+##operation:version
+name: "Node version"
+description: "Checkout repo and display Node.js version"
+
+inputs:
+  node-image:
+    description: "Docker image with Node.js"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Show Node.js version
+      shell: bash
+      run: node --version

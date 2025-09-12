@@ -1,0 +1,27 @@
+##language:react
+##type:action
+##operation:test
+name: "Test React App"
+description: "Run unit tests for React project"
+
+inputs:
+  node-version:
+    description: "Node.js version"
+    required: false
+    default: "18"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Run tests
+      shell: bash
+      run: npm test -- --ci --coverage

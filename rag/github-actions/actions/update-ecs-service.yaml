@@ -1,0 +1,29 @@
+##language:aws cli
+##type:action
+##operation:update-service
+name: "Update ECS Service"
+description: "Updates an ECS service with a new task definition revision"
+
+inputs:
+  cluster:
+    description: "ECS cluster name"
+    required: true
+  service:
+    description: "ECS service name"
+    required: true
+  task-def:
+    description: "Task definition family name"
+    required: true
+  revision:
+    description: "Task definition revision"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        aws ecs update-service \
+          --cluster ${{ inputs.cluster }} \
+          --service ${{ inputs.service }} \
+          --task-definition ${{ inputs.task-def }}:${{ inputs.revision }}

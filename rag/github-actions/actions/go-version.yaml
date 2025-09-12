@@ -1,0 +1,25 @@
+##language:go
+##type:action
+##operation:version
+name: "Go Version"
+description: "Set up Go and display version"
+
+inputs:
+  go-version:
+    description: "The Go version to install"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go-version }}
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Display Go version
+      shell: bash
+      run: go version

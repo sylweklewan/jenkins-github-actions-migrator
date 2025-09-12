@@ -1,0 +1,25 @@
+##language:aws cli
+##type:action
+##operation:register-task-definition
+name: "Register ECS Task Definition"
+description: "Registers a new ECS task definition and outputs the revision number"
+
+inputs:
+  task-def-file:
+    description: "Path to ECS task definition JSON"
+    required: true
+
+outputs:
+  revision:
+    description: "The new ECS task definition revision"
+    value: ${{ steps.register.outputs.revision }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: register
+      shell: bash
+      run: |
+        LATEST_TD_REVISION=$(aws ecs register-task-definition \
+          --cli-input-json file://${{ inputs.task-def-file }} | jq -r '.taskDefinition.revision')
+        echo "revision=$LATEST_TD_REVISION" >> $GITHUB_OUTPUT

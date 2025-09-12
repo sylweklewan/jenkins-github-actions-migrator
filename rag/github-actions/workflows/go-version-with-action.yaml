@@ -1,0 +1,19 @@
+##language:go
+##type:workflow with action
+##operation:version
+name: Go Version Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  go-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Go version check
+        uses: ./.github/actions/go-version
+        with:
+          go-version: "1.25.0"

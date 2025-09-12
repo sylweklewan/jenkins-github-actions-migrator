@@ -1,0 +1,32 @@
+##language:react
+##type:action
+##operation:build
+name: "Build React App"
+description: "Install dependencies and build React project"
+
+inputs:
+  node-version:
+    description: "Node.js version"
+    required: false
+    default: "18"
+
+outputs:
+  build-dir:
+    description: "Path to the build directory"
+    value: build
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Build project
+      shell: bash
+      run: npm run build

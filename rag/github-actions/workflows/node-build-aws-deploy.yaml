@@ -1,0 +1,49 @@
+##language:react
+##type:workflow with action
+##operation:depoly to aws
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ECS_CLUSTER: LearnJenkinsApp-Cluster-Prod
+      AWS_ECS_SERVICE_PROD: LearnJenkinsApp-Service-Prod
+      AWS_ECS_TD_PROD: LearnJenkinsApp-TaskDefinition-Prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Register new task definition
+        id: register
+        uses: ./.github/actions/register-task-def
+        with:
+          task-def-file: aws/task-definition-prod.json
+
+      - name: Update ECS service
+        uses: ./.github/actions/update-ecs-service
+        with:
+          cluster: ${{ env.AWS_ECS_CLUSTER }}
+          service: ${{ env.AWS_ECS_SERVICE_PROD }}
+          task-def: ${{ env.AWS_ECS_TD_PROD }}
+          revision: ${{ steps.register.outputs.revision }}
