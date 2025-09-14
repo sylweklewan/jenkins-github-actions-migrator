@@ -1,5 +1,5 @@
 module "translator_model_serving" {
-  source              = "./modules/model-serving"
+  source              = "./modules/model-serving-vllm"
   namespace           = "kserve"
   model               = var.model
   model_storage_size  = var.model_storage_size
@@ -8,6 +8,17 @@ module "translator_model_serving" {
   inference_node_port = 30080
   memory_limit        = "8Gi"
 }
+
+# module "translator_model_serving" {
+#   source              = "./modules/model-serving"
+#   namespace           = "kserve"
+#   model               = var.model
+#   model_storage_size  = var.model_storage_size
+#   model_local_path    = "/home/user/models"
+#   node_name           = [var.node_name]
+#   inference_node_port = 30080
+#   memory_limit        = "8Gi"
+# }
 
 module "embedding_model_serving" {
   source              = "./modules/model-serving"

@@ -58,7 +58,7 @@ def main():
       vectors_config=VectorParams(size=4096, distance=Distance.COSINE),
     )
       
-    print(documents)
+    #print(documents)
       
     qdrant_client.upsert (
         collection_name ="github_actions_version",

@@ -1,0 +1,22 @@
+##language:react
+##type:action
+##operation:e2e playwright tests
+name: "E2E Playwright Tests"
+description: "Run end-to-end tests with Playwright in container"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install serve
+      shell: bash
+      run: npm install serve
+
+    - name: Start app and run Playwright tests
+      shell: bash
+      run: |
+        node_modules/.bin/serve -s build &
+        sleep 10
+        npx playwright test

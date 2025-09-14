@@ -1,0 +1,20 @@
+##language:go
+##type:action
+##operation:build
+name: "Go Build"
+description: "Build Go project and upload binary"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build
+      shell: bash
+      run: |
+        mkdir -p build
+        go build -o build/app ./...
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: go-binary
+        path: build/app

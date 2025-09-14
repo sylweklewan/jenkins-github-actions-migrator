@@ -1,0 +1,12 @@
+##language:go
+##type:action
+##operation:test
+name: "Go Test"
+description: "Run Go tests and upload results"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run tests
+      shell: bash
+      run: go test -v ./...
