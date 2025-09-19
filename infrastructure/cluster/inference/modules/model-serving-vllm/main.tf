@@ -97,10 +97,7 @@ resource "kubernetes_deployment" "model_serving" {
 
           args = concat([
             "--model=/mnt/models/${var.model}",
-            #"--model_dir=/mnt/models",
-            "--trust-remote-code",
             "--gpu_memory_utilization=0.5"
-            #,"--input-model=/mnt/models/${var.model}"
           ], var.inference_service_args)
           
           port {
@@ -136,47 +133,6 @@ resource "kubernetes_deployment" "model_serving" {
     }
   }
 }
-
-# resource "kubernetes_manifest" "model_serving" {
-#   manifest = {
-#     apiVersion = "serving.kserve.io/v1beta1"
-#     kind       = "InferenceService"
-#     metadata = {
-#       name      = var.model
-#       namespace = data.kubernetes_namespace.kserve.metadata[0].name
-#     }
-#     spec = {
-#       predictor = {
-#         runtimeClassName = "nvidia"
-#         model = {
-#           storageUri = "pvc://${kubernetes_persistent_volume_claim.model_pvc.metadata[0].name}/${var.model}/"
-#           modelFormat = {
-#             name = "huggingface"
-#           }
-#           args = concat([
-#             "--model_name=${var.model}",
-#             "--model_dir=/mnt/models",
-#             "--trust-remote-code",
-#           ], var.inference_service_args)
-#           resources = {
-#             requests = {
-#               memory           = var.memory_limit
-#               cpu              = "1"
-#               "nvidia.com/gpu" = "1"
-#             }
-#             limits = {
-#               memory           = var.memory_limit
-#               cpu              = "1"
-#               "nvidia.com/gpu" = "1"
-#             }
-#           }
-#         }
-#       }
-#     }
-#   }
-# }
-
-
 resource "kubernetes_service" "model_nodeport" {
   metadata {
     name      = "${var.model}-nodeport"

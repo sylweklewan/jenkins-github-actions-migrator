@@ -5,20 +5,10 @@ module "translator_model_serving" {
   model_storage_size  = var.model_storage_size
   model_local_path    = "/home/user/models"
   node_name           = [var.node_name]
+  inference_service_args = ["--gpu_memory_utilization=0.5"]
   inference_node_port = 30080
   memory_limit        = "8Gi"
 }
-
-# module "translator_model_serving" {
-#   source              = "./modules/model-serving"
-#   namespace           = "kserve"
-#   model               = var.model
-#   model_storage_size  = var.model_storage_size
-#   model_local_path    = "/home/user/models"
-#   node_name           = [var.node_name]
-#   inference_node_port = 30080
-#   memory_limit        = "8Gi"
-# }
 
 module "embedding_model_serving" {
   source              = "./modules/model-serving"
