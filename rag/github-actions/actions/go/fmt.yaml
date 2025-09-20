@@ -1,3 +1,6 @@
+##language:go
+##type:action
+##operation:fmt
 name: "Go Fmt"
 description: "Run go fmt and capture changed files"
 

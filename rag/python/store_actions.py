@@ -52,13 +52,11 @@ def main():
 
     qdrant_client = QdrantClient(host="80.188.223.202", port=10401)
 
-    if qdrant_client.collection_exists("github_actions_version"):
-        qdrant_client.delete_collection("github_actions_version")
-
-    qdrant_client.create_collection(
-      collection_name="github_actions_version",
-      vectors_config=VectorParams(size=4096, distance=Distance.COSINE),
-    )
+    if not qdrant_client.collection_exists("github_actions_version"):
+        qdrant_client.create_collection(
+            collection_name="github_actions_version",
+            vectors_config=VectorParams(size=4096, distance=Distance.COSINE),
+        )
       
     qdrant_client.upsert (
         collection_name ="github_actions_version",

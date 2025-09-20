@@ -57,7 +57,7 @@ def main():
     results = qdrant_client.query_points(
         collection_name="github_actions_version",
         query= embeddings.embed_query("Github action for: {pipelineContextPrompt}"),
-        limit=3
+        limit=10
     )
     context = "\n######################".join([p.payload['content'].strip() for p in results.points])
 
