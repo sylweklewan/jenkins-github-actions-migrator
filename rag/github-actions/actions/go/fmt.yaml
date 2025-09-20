@@ -1,0 +1,17 @@
+name: "Go Fmt"
+description: "Run go fmt and capture changed files"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run go fmt
+      shell: bash
+      run: |
+        go fmt ./...
+        git diff --name-only > formatted-files.txt || true
+
+    - name: Upload formatted files artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: formatted-files
+        path: formatted-files.txt
