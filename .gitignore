@@ -41,4 +41,5 @@ terraform.rc
 curl*sh
 logs/
 rag/go/store-embeddings/bin/
-pipelines/
+pipelines-legacy/
+rag/python/*.yaml

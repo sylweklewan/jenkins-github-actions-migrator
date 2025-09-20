@@ -1,0 +1,37 @@
+pipeline {
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Format (go fmt)') {
+            steps {
+                sh '''
+                    go fmt ./...
+                    git diff --name-only > formatted-files.txt || true
+                '''
+                archiveArtifacts artifacts: 'formatted-files.txt', onlyIfSuccessful: true
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh '''
+                    mkdir -p build
+                    go build -o build/app ./...
+                '''
+                archiveArtifacts artifacts: 'build/app', onlyIfSuccessful: true
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh '''
+                    go test -v ./...
+                '''
+            }
+        }
+    }
+}
