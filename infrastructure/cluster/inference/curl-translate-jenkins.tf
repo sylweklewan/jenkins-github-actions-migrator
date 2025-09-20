@@ -12,7 +12,7 @@ resource "local_file" "curl_translate_jenkins" {
     read -r -d '' PAYLOAD <<EOF
     {
         "prompt": "${var.jenkins_pipeline_prompt_start}\\n${replace(file(each.value), "\n", "\\n")}",
-        "model": "${var.model}",
+        "model": "/mnt/models/${var.model}",
         "stream": false,
         "max_tokens": ${var.max_tokens}
     }
