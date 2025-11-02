@@ -96,13 +96,27 @@ resource "kubernetes_deployment" "model_serving" {
           image = "vllm/vllm-openai:latest"
 
           args = concat([
-            "--model=/mnt/models/${var.model}",
-            "--gpu_memory_utilization=0.5"
+            "--model=/mnt/models/${var.model}"
+            #,
+            #"--gpu_memory_utilization=0.5"
           ], var.inference_service_args)
           
           port {
             container_port = 8000
           }
+
+          env {
+            name = "CUDA_VISIBLE_DEVICES"
+            value = "0"
+          }
+
+
+          env {
+            name = "VLLM_USE_FLASH_ATTN"
+            value = "0"
+          }
+
+
 
           resources {
             limits = {

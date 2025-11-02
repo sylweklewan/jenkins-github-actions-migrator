@@ -5,9 +5,9 @@ module "translator_model_serving" {
   model_storage_size  = var.model_storage_size
   model_local_path    = "/home/user/models"
   node_name           = [var.node_name]
-  inference_service_args = ["--gpu_memory_utilization=0.5"]
+  inference_service_args = ["--gpu_memory_utilization=0.9"]
   inference_node_port = 30080
-  memory_limit        = "8Gi"
+  memory_limit        = "16Gi"
 }
 
 module "embedding_model_serving" {

@@ -1,4 +1,4 @@
-resource "kubernetes_namespace" "kserve" {
+data "kubernetes_namespace" "kserve" {
   metadata {
     name = "kserve"
   }
@@ -6,7 +6,7 @@ resource "kubernetes_namespace" "kserve" {
 
 resource "helm_release" "kserve_crd" {
   name      = "kserve-crd"
-  namespace = kubernetes_namespace.kserve.metadata[0].name
+  namespace = data.kubernetes_namespace.kserve.metadata[0].name
   version   = "v0.15.2"
 
   repository       = "oci://ghcr.io/kserve/charts"

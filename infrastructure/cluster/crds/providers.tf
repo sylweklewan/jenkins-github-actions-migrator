@@ -13,7 +13,7 @@ terraform {
 
 provider "kubernetes" {
   config_path    = var.kubeconfig_path
-  config_context = "default"
+  config_context = "a100"
 }
 
 provider "helm" {

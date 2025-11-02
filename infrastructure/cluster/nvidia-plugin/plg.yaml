@@ -39,7 +39,7 @@ spec:
       priorityClassName: "system-node-critical"
       runtimeClassName: nvidia
       containers:
-      - image: nvcr.io/nvidia/k8s-device-plugin:v0.17.4
+      - image: nvcr.io/nvidia/k8s-device-plugin:v0.18.0
         name: nvidia-device-plugin-ctr
         args: ["--config-file", "/etc/nvidia-device-plugin/config.json"]
         env:
